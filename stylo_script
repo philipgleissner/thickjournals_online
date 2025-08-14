@@ -1,0 +1,79 @@
+library(stylo)
+raw.corpus <- load.corpus(files = "all", corpus.dir = "corpus_files", encoding = "UTF-8")
+tokenized.corpus <- txt.to.words.ext(raw.corpus, preserve.case = FALSE)
+summary(tokenized.corpus)
+stopwords <- c(
+  # Personal pronouns (first, second, third person)
+  "я", "меня", "мне", "меня", "мной", "мною", "обо мне",
+  "мы", "нас", "нам", "нас", "нами", "о нас",
+  "ты", "тебя", "тебе", "тебя", "тобой", "тобою", "о тебе",
+  "вы", "вас", "вам", "вас", "вами", "о вас",
+  "он", "его", "ему", "его", "им", "о нём",
+  "она", "её", "ей", "её", "ею", "о ней",
+  "оно", "его", "ему", "его", "им", "о нём",
+  "они", "их", "им", "их", "ими", "о них",
+  
+  # Possessive pronouns (first and second person, including plural forms)
+  "мой", "моя", "моё", "мои",  # Nominative
+  "моего", "моей", "моего", "моих",  # Genitive
+  "моему", "моей", "моему", "моим",  # Dative
+  "моего", "мою", "моё", "мои",  # Accusative
+  "моим", "моей", "моим", "моими",  # Instrumental
+  "о моём", "о моей", "о моём", "о моих",  # Prepositional
+  
+  "наш", "наша", "наше", "наши",  # Nominative
+  "нашего", "нашей", "нашего", "наших",  # Genitive
+  "нашему", "нашей", "нашему", "нашим",  # Dative
+  "нашего", "нашу", "наше", "наши",  # Accusative
+  "нашим", "нашей", "нашим", "нашими",  # Instrumental
+  "о нашем", "о нашей", "о нашем", "о наших",  # Prepositional
+  
+  "твой", "твоя", "твоё", "твои",  # Nominative
+  "твоего", "твоей", "твоего", "твоих",  # Genitive
+  "твоему", "твоей", "твоему", "твоим",  # Dative
+  "твоего", "твою", "твоё", "твои",  # Accusative
+  "твоим", "твоей", "твоим", "твоими",  # Instrumental
+  "о твоём", "о твоей", "о твоём", "о твоих",  # Prepositional
+  
+  "ваш", "ваша", "ваше", "ваши",  # Nominative
+  "вашего", "вашей", "вашего", "ваших",  # Genitive
+  "вашему", "вашей", "вашему", "вашим",  # Dative
+  "вашего", "вашу", "ваше", "ваши",  # Accusative
+  "вашим", "вашей", "вашим", "вашими",  # Instrumental
+  "о вашем", "о вашей", "о вашем", "о ваших",  # Prepositional
+  
+  # Third person possessive (invariable)
+  "его", "её", "их",
+  
+  # Reflexive possessive pronouns (свой, своя, своё, свои)
+  "свой", "своя", "своё", "свои",  # Nominative
+  "своего", "своей", "своего", "своих",  # Genitive
+  "своему", "своей", "своему", "своим",  # Dative
+  "своего", "свою", "своё", "свои",  # Accusative
+  "своим", "своей", "своим", "своими",  # Instrumental
+  "о своём", "о своей", "о своём", "о своих",  # Prepositional
+  
+  # Reflexive pronouns
+  "себя", "себе", "собой", "о себе",
+  
+  #journal titles
+  "Новый мир", "Октябрь", "Урал", "Нева", "Сибирские огни"
+)
+corpus.no.pronouns <- delete.stop.words(tokenized.corpus, stop.words = stopwords)
+sliced.corpus <- make.samples(corpus.no.pronouns, sampling = "random.sampling", sample.size = 100000, number.of.samples=1)
+frequent.features <- make.frequency.list(sliced.corpus, head = 3000)
+freqs <- make.table.of.frequencies(sliced.corpus, features = frequent.features)
+head(freqs) 
+culled.freqs <- perform.culling(freqs, culling.level = 80)
+
+#First data visualization: dendrogram
+pdf("output_dendrogram.pdf", width = 8, height = 12)  # Adjust width and height as necessary
+stylo(frequencies = culled.freqs, gui = FALSE)
+dev.off()  # Close the PDF device to save the file
+
+# Second data visualization: correlation matrix
+pdf("output_plot.pdf", width = 10, height = 10)  # Adjust width and height as needed
+stylo(frequencies = culled.freqs, analysis.type = "PCR",
+      custom.graph.title = "(Socialist) Realist Novels", 
+     gui = FALSE)
+dev.off()
