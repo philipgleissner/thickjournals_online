@@ -8,4 +8,4 @@ Current content of this repository:
 
 Full text files of annual volumes of journals, used for stylometric analysis to identify difference between journals in terms of word frequency patterns: Neva, Novyi mir, Oktiabr', Sibirskie ogni, Ural.
 
-R script used for stylometric analysis, using R Package by Eder, M., Rybicki, J. and Kestemont, M. (2016). “Stylometry with R: A Package for Computational text analysis.” R Journal 8(1): 107-121.
+R script (stylo_script) used for stylometric analysis, using R Package by Eder, M., Rybicki, J. and Kestemont, M. (2016). “Stylometry with R: A Package for Computational text analysis.” R Journal 8(1): 107-121.
